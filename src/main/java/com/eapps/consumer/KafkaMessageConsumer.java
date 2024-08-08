@@ -21,6 +21,24 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class KafkaMessageConsumer {
 
+	
+	 /*@RetryableTopic(kafkaTemplate = "kafkaTemplate",
+    attempts = "4",
+    backoff = @Backoff(delay = 3000, multiplier = 1.5, maxDelay = 15000)*/
+    
+	/* @Transactional */
+	
+	/*@RetryableTopic(kafkaTemplate = "kafkaTemplate",
+	        exclude = {DeserializationException.class,
+	                MessageConversionException.class,
+	                ConversionException.class,
+	                MethodArgumentResolutionException.class,
+	                NoSuchMethodException.class,
+	                ClassCastException.class},
+	        attempts = "4",
+	        backoff = @Backoff(delay = 3000, multiplier = 1.5, maxDelay = 15000)
+	)*/
+	
     @RetryableTopic(attempts = "4")// 3 topic N-1
     @KafkaListener(topics = "${app.topic.name}", groupId = "eapps-group")
     public void consumeEvents(User user, @Header(KafkaHeaders.RECEIVED_TOPIC) String topic, @Header(KafkaHeaders.OFFSET) long offset) {
@@ -37,7 +55,7 @@ public class KafkaMessageConsumer {
         }
     }
 
-    @DltHandler
+    @DltHandler//Dead letter queue and handler
     public void listenDLT(User user, @Header(KafkaHeaders.RECEIVED_TOPIC) String topic, @Header(KafkaHeaders.OFFSET) long offset) {
         log.info("DLT Received : {} , from {} , offset {}",user.getFirstName(),topic,offset);
     }
